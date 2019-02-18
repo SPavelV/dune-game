@@ -8,3 +8,5 @@
 
 export {default as SplashScreen} from './splash-screen';
 export {default as Game} from './game';
+export {default as Intro} from './intro';
+export {default as Worm} from './worm';

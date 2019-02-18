@@ -15,12 +15,12 @@ import * as scenes from '@/scenes';
 /**
  *  Game canvas width.
  */
-export const width = 640;
+export const width = 1024;
 
 /**
  *  Game canvas height.
  */
-export const height = 480;
+export const height = 768;
 
 /**
  *  Adjust zoom factor.
@@ -62,7 +62,7 @@ export const canvasStyle = 'display: block; margin: 0 auto;';
 /**
  *  Define a default a background color.
  */
-export const backgroundColor = '#000000';
+export const backgroundColor = '#177a24';
 
 /**
  *  Configure physics engines global parameters.
@@ -79,8 +79,9 @@ export const physics = {
    *
    *  This engine becomes available under a `physics` property on game scenes.
    */
-  // arcade: {
-  // },
+  arcade: {
+    // gravity: {y: 200}
+  },
 
   /**
    *  Matter.js parameters.
@@ -101,7 +102,8 @@ export const physics = {
   /**
    *  Enable a physics engine by default on all game scenes.
    */
-  default: false
+  default: 'arcade'
+
 };
 
 /**
