@@ -6,12 +6,6 @@ export default class Worm extends Phaser.Scene {
    */
   constructor() {
     super({key: 'Worm'});
-
-    this.wormHead = null;
-    this.wormSection = [];
-    this.wormPath = [];
-    this.numWormSection = 10;
-    this.wormSpacer = 6;
   }
 
   /**
@@ -42,25 +36,46 @@ export default class Worm extends Phaser.Scene {
    *  @param {object} [data={}] - Initialization parameters.
    */
   create(/* data */) {
+    this.wormHead = null;
+    this.wormSection = [];
+    this.wormPath = [];
+    this.numWormSection = 10;
+    this.wormSpacer = 25;
 
-    this.cursors = this.input.keyboard.createCursorKeys();
 
-    this.wormHead = this.physics.add.sprite(100,200, 'worm-head').setVelocity(100, -100)
-      .setBounce(1, 1)
-      .setCollideWorldBounds(true);
+    this.worm = this.physics.add.group(
+      [
+        {key: 'worm-head', frameQuantity: 1, setXY: { x: 100, y: 400}},
+        {key: 'worm-section', frameQuantity: 5, setXY: {x: 100, y: 400+this.wormSpacer, stepY: this.wormSpacer}}
+      ]
+      );
 
-    // this.wormHead.anchor.setTo(0.5);
+    console.log('---', this.worm.getChildren());
+    const wormChildren = this.worm.getChildren();
 
-    // Секции червя
-    for (let i = 0; i < this.numWormSection; i++) {
-      this.wormSection[i] = this.add.sprite(100,200, 'worm-section');
-    }
 
-    //Путь червя:
-    for(let i = 0; i <= this.numWormSection * this.wormSpacer; i++) {
-      this.wormPath[i] = new Phaser.Geom.Point(100,200);
-    }
+    this.worm = this.physics.add.image( 100, 400,'worm-head');
+    this.cursor = this.add.image( 0, 0,'worm-section').setVisible(false);
 
+
+    const moveWorm = (pointer) => {
+      this.cursor.setVisible(true).setPosition(pointer.x, pointer.y);
+      let self = this;
+      console.log('---', self.worm.getChildren());
+      self.physics.moveToObject(self.cursor, pointer, 240);
+
+      //
+      Phaser.Utils.Array.Each(
+        wormChildren.getChildren(),
+        self.physics.moveToObject,
+        self.physics,
+        pointer, 100);
+
+    };
+
+    this.input.on('pointermove', pointer => {
+      moveWorm(pointer);
+    }, this);
   }
 
   /**
@@ -71,36 +86,7 @@ export default class Worm extends Phaser.Scene {
    *  @param {number} dt - Time elapsed since last update.
    */
   update(/* t, dt */) {
-    this.wormHead.body.velocity.setTo(0, 0);
-    this.wormHead.body.angularVelocity = 0;
 
-    if (this.cursors.up.isDown)
-    {
-      // this.wormHead.body.velocity.copyFrom(this.game.physics.arcade.velocityFromAngle(this.wormHead.angle, 300));
-      // Everytime the snake head moves, insert the new location at the start of the array, 
-      // and knock the last position off the end
-
-      let part = this.wormPath.pop();
-
-      part.setTo(this.wormHead.x, this.wormHead.y);
-
-      this.wormPath.unshift(part);
-
-      for (let i = 1; i <= this.numWormSection - 1; i++)
-      {
-        this.wormSection[i].x = (this.wormPath[i * this.wormSpacer]).x;
-        this.wormSection[i].y = (this.wormPath[i * this.wormSpacer]).y;
-      }
-    }
-
-    if (this.cursors.left.isDown)
-    {
-      this.wormHead.body.angularVelocity = -300;
-    }
-    else if (this.cursors.right.isDown)
-    {
-      this.wormHead.body.angularVelocity = 300;
-    }
   }
 
   /**
